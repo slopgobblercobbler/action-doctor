@@ -1,0 +1,25 @@
+name: Unpinned Actions Workflow
+
+on: [push]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout unpinned tag
+        uses: actions/checkout@v4
+
+      - name: Setup python unpinned
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Upload artifact deprecated version
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/

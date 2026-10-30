@@ -1,0 +1,23 @@
+name: Deprecated Commands Workflow
+
+on: [push]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Old set output
+        run: echo "::set-output name=result::success"
+
+      - name: Old save state
+        run: echo "::save-state name=started_at::12345"
+
+      - name: Old add path
+        run: echo "::add-path::/custom/bin"
+
+      - name: Old set env
+        run: echo "::set-env name=MY_VAR::hello"

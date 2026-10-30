@@ -1,0 +1,26 @@
+name: Insecure Patterns
+
+on:
+  pull_request_target:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  pwn-vulnerable:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Dangerous checkout of PR head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Script injection vulnerability
+        run: |
+          echo "Processing PR: ${{ github.event.pull_request.title }}"
+
+      - name: Plaintext secret in script
+        run: |
+          curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.example.com

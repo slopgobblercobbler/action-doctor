@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "action-doctor"
+version = "0.1.0"
+description = "Audits GitHub Actions workflow YAML files, detects deprecated runner images, unpinned action SHAs, missing permissions, and provides automated fixes."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "slopggobblercobbler81" }
+]
+keywords = [
+    "github-actions",
+    "security",
+    "ci-cd",
+    "linter",
+    "actions",
+    "runner",
+    "devops",
+    "openssf",
+    "audit"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Security",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.scripts]
+action-doctor = "action_doctor.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["action_doctor*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --strict-markers"
+
+[tool.action-doctor]
+fail_on = "error"
+default_timeout = 60
+preferred_runner = "ubuntu-latest"
