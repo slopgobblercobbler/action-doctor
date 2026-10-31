@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Action Doctor — GitHub Actions Workflow Security & Health Auditor</title>
+  <meta name="description" content="In-browser client-side security and hygiene auditor for GitHub Actions workflows. Detects pull_request_target exploits, command injection, unpinned actions, deprecated runners, and missing permissions.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩺</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-wrapper">
+      <div class="brand-icon">🩺</div>
+      <div>
+        <div class="brand-title">
+          Action Doctor
+          <span class="brand-badge">Client-Side · In-Browser</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="https://github.com/slopgobblercobbler/action-doctor" target="_blank" rel="noopener noreferrer" class="header-btn">
+        <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/>
+        </svg>
+        GitHub Repository
+      </a>
+    </div>
+  </header>
+
+  <!-- Toolbar / Presets -->
+  <div class="toolbar-container">
+    <div class="preset-buttons">
+      <span class="toolbar-label">Sample Presets:</span>
+      <button class="btn-preset active" id="preset-vulnerable" data-preset="VULNERABLE">
+        ⚠️ Vulnerable Pipeline
+      </button>
+      <button class="btn-preset" id="preset-cicd" data-preset="CICD_PIPELINE">
+        🔄 Common CI/CD
+      </button>
+      <button class="btn-preset" id="preset-hardened" data-preset="HARDENED">
+        🛡️ Hardened Production
+      </button>
+    </div>
+
+    <div class="editor-actions">
+      <label for="file-upload" class="action-btn" title="Upload local workflow YAML">
+        📁 Open File...
+        <input type="file" id="file-upload" accept=".yml,.yaml" style="display:none">
+      </label>
+      <button class="action-btn" id="btn-clear" title="Clear current editor">
+        🧹 Clear
+      </button>
+      <button class="action-btn" id="btn-copy-yaml" title="Copy workflow text">
+        📋 Copy YAML
+      </button>
+      <button class="action-btn action-btn-primary" id="btn-export-markdown" title="Export Security Audit Markdown">
+        📄 Export Report
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Dual Workspace -->
+  <main class="main-workspace">
+    
+    <!-- Left Pane: Editor -->
+    <section class="editor-pane">
+      <div class="pane-header">
+        <span class="pane-title">
+          <span>📝 Workflow Editor (.github/workflows/*.yml)</span>
+        </span>
+        <span id="editor-meta" style="font-size:0.75rem; color:var(--text-muted);">Live Audit Active</span>
+      </div>
+
+      <div class="editor-wrapper" id="editor-drop-zone">
+        <div class="line-numbers" id="line-numbers">1</div>
+        <textarea 
+          id="yaml-editor" 
+          class="yaml-textarea" 
+          placeholder="# Paste your GitHub Actions workflow YAML here..."
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <div class="editor-footer">
+        <span id="editor-stats">Lines: 0 · Chars: 0</span>
+        <span>Drag & drop .yml files anywhere</span>
+      </div>
+    </section>
+
+    <!-- Right Pane: Audit Dashboard -->
+    <section class="audit-pane">
+      <div class="pane-header">
+        <span class="pane-title">
+          <span>🩺 Security & Hygiene Audit Dashboard</span>
+        </span>
+        <span id="audit-status" style="font-size:0.75rem; color:var(--color-info);">Analyzed</span>
+      </div>
+
+      <div class="dashboard-content">
+        
+        <!-- Score Card -->
+        <div class="score-card" id="score-card">
+          <div class="score-info">
+            <div class="score-title" id="score-title">Workflow Health Score</div>
+            <div class="score-description" id="score-description">
+              Evaluating least privilege permissions, command injection risks, action pinning, and runner support.
+            </div>
+          </div>
+          <div class="score-gauge-wrapper">
+            <div class="score-circle" id="score-circle" style="--score-pct: 100; --score-color: #3fb950;">
+              <div class="score-circle-inner">
+                <span class="score-value" id="score-value">100</span>
+                <span class="score-grade" id="score-grade">A+</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-label">Supply Chain</span>
+            <div class="metric-val" id="metric-pinning">100%</div>
+            <span class="metric-badge" id="metric-pinning-badge" style="background:rgba(63,185,80,0.15); color:#3fb950;">Pinned</span>
+          </div>
+
+          <div class="metric-card">
+            <span class="metric-label">Permissions</span>
+            <div class="metric-val" id="metric-permissions">Explicit</div>
+            <span class="metric-badge" id="metric-permissions-badge" style="background:rgba(63,185,80,0.15); color:#3fb950;">Least Privilege</span>
+          </div>
+
+          <div class="metric-card">
+            <span class="metric-label">Runners</span>
+            <div class="metric-val" id="metric-runners">Supported</div>
+            <span class="metric-badge" id="metric-runners-badge" style="background:rgba(63,185,80,0.15); color:#3fb950;">Modern</span>
+          </div>
+
+          <div class="metric-card">
+            <span class="metric-label">Timeouts</span>
+            <div class="metric-val" id="metric-timeouts">Bounded</div>
+            <span class="metric-badge" id="metric-timeouts-badge" style="background:rgba(63,185,80,0.15); color:#3fb950;">Protected</span>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="filter-pills" id="filter-pills">
+            <button class="filter-pill active" data-filter="all">All <span class="filter-count" id="count-all">0</span></button>
+            <button class="filter-pill" data-filter="critical">Critical <span class="filter-count" id="count-critical">0</span></button>
+            <button class="filter-pill" data-filter="error">Error <span class="filter-count" id="count-error">0</span></button>
+            <button class="filter-pill" data-filter="warning">Warning <span class="filter-count" id="count-warning">0</span></button>
+            <button class="filter-pill" data-filter="info">Info <span class="filter-count" id="count-info">0</span></button>
+          </div>
+        </div>
+
+        <!-- Findings List -->
+        <div class="findings-container" id="findings-container">
+          <!-- Populated by JS -->
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notification Toast -->
+  <div class="toast-notice" id="toast-notice">Copied to clipboard!</div>
+
+  <!-- Scripts -->
+  <script src="js/js-yaml.min.js"></script>
+  <script src="js/action_auditor.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

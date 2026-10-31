@@ -1,5 +1,6 @@
 # 🩺 action-doctor
 
+[![Live Web App](https://img.shields.io/badge/Live%20App-GitHub%20Pages-success?logo=github&style=flat)](https://slopgobblercobbler.github.io/action-doctor/)
 [![CI](https://github.com/slopgobblercobbler/action-doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/slopgobblercobbler/action-doctor/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://pypi.org/project/action-doctor/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
